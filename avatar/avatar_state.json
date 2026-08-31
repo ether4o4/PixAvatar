@@ -1,0 +1,38 @@
+{
+  "states": [
+    "IDLE",
+    "LISTENING",
+    "THINKING",
+    "SPEAKING",
+    "HAPPY",
+    "CONFUSED",
+    "SURPRISED",
+    "ANGRY",
+    "SLEEPING"
+  ],
+  "expressions": [
+    "neutral",
+    "smile",
+    "laugh",
+    "curious",
+    "confused",
+    "surprised",
+    "annoyed",
+    "sleepy"
+  ],
+  "mouthShapes": [
+    "closed",
+    "small",
+    "medium",
+    "wide"
+  ],
+  "actions": [
+    "none",
+    "blink",
+    "nod",
+    "head_tilt_left",
+    "head_tilt_right",
+    "look_left",
+    "look_right"
+  ]
+}
