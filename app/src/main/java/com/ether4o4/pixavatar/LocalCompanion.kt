@@ -30,7 +30,7 @@ class LocalCompanion(
 
     suspend fun prepare(onProgress: (Long, Long) -> Unit = { _, _ -> }): String = withContext(Dispatchers.IO) {
         val file = edge.models.prefetch(model) { progress ->
-            onProgress(progress.downloadedBytes, progress.totalBytes)
+            onProgress(progress.downloadedBytes ?: 0L, progress.totalBytes ?: 0L)
         }
         file.absolutePath
     }
