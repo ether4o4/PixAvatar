@@ -10,9 +10,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.util.Locale
 
 class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
@@ -142,7 +140,7 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
             tts.stop()
             tts.shutdown()
         }
-        if (::companion.isInitialized) companion.close()
+        companion.close()
         super.onDestroy()
     }
 }
