@@ -18,12 +18,28 @@ class AvatarView(context: Context) : View(context) {
     private var expression = Expression.IDLE
     var onSpeak: ((String) -> Unit)? = null
 
-    private enum class Expression { IDLE, HAPPY, THINKING, SURPRISED }
+    private enum class Expression { IDLE, HAPPY, THINKING, SURPRISED, ANNOYED }
 
     init {
         isFocusable = true
         paint.strokeCap = Paint.Cap.ROUND
         setBackgroundColor(0xFF090A08.toInt())
+    }
+
+    fun setExpression(name: String) {
+        expression = when (name.lowercase()) {
+            "happy", "smile" -> Expression.HAPPY
+            "thinking", "curious" -> Expression.THINKING
+            "surprised" -> Expression.SURPRISED
+            "annoyed", "angry" -> Expression.ANNOYED
+            else -> Expression.IDLE
+        }
+        invalidate()
+    }
+
+    fun startSpeaking(durationMs: Long) {
+        speakingUntil = System.currentTimeMillis() + durationMs.coerceIn(500L, 120_000L)
+        invalidate()
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -44,23 +60,19 @@ class AvatarView(context: Context) : View(context) {
         val blink = now < blinkUntil
         val bob = sin(t * 1.6f) * 3f * scale
 
-        // Helmet
         paint.style = Paint.Style.FILL
         paint.color = 0xFF536737.toInt()
         canvas.drawRoundRect(RectF(cx - 175 * scale, cy - 210 * scale + bob, cx + 175 * scale, cy + 60 * scale + bob), 75 * scale, 75 * scale, paint)
         paint.color = 0xFFB68A35.toInt()
         canvas.drawRoundRect(RectF(cx - 175 * scale, cy - 28 * scale + bob, cx + 175 * scale, cy + 5 * scale + bob), 16 * scale, 16 * scale, paint)
 
-        // Face
         paint.color = 0xFF111311.toInt()
         canvas.drawOval(RectF(cx - 145 * scale, cy - 145 * scale + bob, cx + 145 * scale, cy + 135 * scale + bob), paint)
 
-        // Eyes
         val eyeY = cy - 45 * scale + bob
         drawEye(canvas, cx - 62 * scale, eyeY, 48 * scale, blink, expression, t)
         drawEye(canvas, cx + 62 * scale, eyeY, 48 * scale, blink, expression, t + .2f)
 
-        // Mouth
         paint.color = 0xFFE7E0CF.toInt()
         if (talking) {
             val open = (0.55f + 0.45f * sin(t * 18f)) * scale
@@ -73,7 +85,6 @@ class AvatarView(context: Context) : View(context) {
             paint.style = Paint.Style.FILL
         }
 
-        // Hoodie/body
         paint.color = 0xFF252B24.toInt()
         canvas.drawRoundRect(RectF(cx - 150 * scale, cy + 120 * scale, cx + 150 * scale, cy + 390 * scale), 55 * scale, 55 * scale, paint)
         paint.color = 0xFF8C9E4E.toInt()
@@ -105,6 +116,7 @@ class AvatarView(context: Context) : View(context) {
         val vertical = when (expression) {
             Expression.SURPRISED -> 1.15f
             Expression.THINKING -> .72f
+            Expression.ANNOYED -> .62f
             else -> .9f
         }
         canvas.drawOval(RectF(x - r, y - r * vertical, x + r, y + r * vertical), paint)
@@ -117,6 +129,8 @@ class AvatarView(context: Context) : View(context) {
         talking -> "SPEAKING"
         expression == Expression.THINKING -> "THINKING"
         expression == Expression.HAPPY -> "HAPPY"
+        expression == Expression.SURPRISED -> "SURPRISED"
+        expression == Expression.ANNOYED -> "ANNOYED"
         else -> "IDLE"
     }
 
@@ -126,9 +140,10 @@ class AvatarView(context: Context) : View(context) {
                 Expression.IDLE -> Expression.HAPPY
                 Expression.HAPPY -> Expression.THINKING
                 Expression.THINKING -> Expression.SURPRISED
-                Expression.SURPRISED -> Expression.IDLE
+                Expression.SURPRISED -> Expression.ANNOYED
+                Expression.ANNOYED -> Expression.IDLE
             }
-            speakingUntil = System.currentTimeMillis() + 2200L
+            startSpeaking(2200L)
             onSpeak?.invoke("What's up? I'm PixAvatar.")
             performClick()
             return true
