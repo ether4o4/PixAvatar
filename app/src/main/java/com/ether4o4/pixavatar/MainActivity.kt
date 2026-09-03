@@ -54,7 +54,7 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         }
         input = EditText(this).apply {
             hint = "Talk to PixAvatar…"
-            singleLine = true
+            maxLines = 1
         }
         row.addView(input, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
 
